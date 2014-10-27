@@ -1,0 +1,17 @@
+{{define "card"}}
+{{template "header"}}
+<h1> {{.Name}} </h1>
+Rarity: {{.Rarity}}<br>
+Cost: {{.Cost }} <br>
+Flavor: {{.Flavor}} <br>
+Text: {{.Text}} <br>
+Attack/Health: {{.Attack}}/{{.Health}}<br>
+Mechanics:
+<ul>
+    {{range .Mechanics}}
+    <li>{{.}}</li>
+    {{end}}
+</ul>
+Artist: {{ .Artist }}<br>
+{{template "footer"}}
+{{end}}
