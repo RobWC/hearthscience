@@ -12,6 +12,22 @@ indexes:
 
 - kind: hs.Card
   properties:
+  - name: Collectable
+  - name: Type
+  - name: Attack
+    direction: desc
+  - name: Name
+
+- kind: hs.Card
+  properties:
+  - name: Collectible
+  - name: Type
+  - name: Attack
+    direction: desc
+  - name: Name
+
+- kind: hs.Card
+  properties:
   - name: Type
   - name: Attack
     direction: desc
