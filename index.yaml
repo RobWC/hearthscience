@@ -10,6 +10,48 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: Minion
+  properties:
+  - name: AttackToCost
+  - name: Name
+
+- kind: Minion
+  properties:
+  - name: AttackToCost
+    direction: desc
+  - name: Name
+
+- kind: Minion
+  properties:
+  - name: Collectible
+  - name: AttackHealthToCost
+  - name: Name
+
+- kind: Minion
+  properties:
+  - name: Collectible
+  - name: AttackHealthToCost
+    direction: desc
+  - name: Name
+
+- kind: Minion
+  properties:
+  - name: Collectible
+  - name: AttackToCost
+    direction: desc
+  - name: Name
+
+- kind: Minon
+  properties:
+  - name: AttackToCost
+  - name: Name
+
+- kind: Minon
+  properties:
+  - name: AttackToCost
+    direction: desc
+  - name: Name
+
 - kind: hs.Card
   properties:
   - name: Collectable

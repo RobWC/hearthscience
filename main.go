@@ -22,9 +22,25 @@ func init() {
 	r.HandleFunc("/", mainHandler).Methods("GET")
 	r.HandleFunc("/update", updateHandler)
 	r.HandleFunc("/cards", cardList)
+	r.HandleFunc("/minions", allMinions)
 	r.HandleFunc("/cardlist", allCards)
 	r.HandleFunc("/card/{id:[0-9a-zA-Z]+_[0-9a-zA-Z]+}", cardInfo)
 	http.Handle("/", r)
+}
+
+func allMinions(w http.ResponseWriter, r *http.Request) {
+	c := appengine.NewContext(r)
+	q := datastore.NewQuery("Minion").Filter("Collectible =", true).Filter("AttackHealthToCost >=", 0).Order("-AttackHealthToCost").Order("Name")
+	var minions []Minion
+	if _, err := q.GetAll(c, &minions); err != nil {
+		c.Errorf(err.Error())
+		return
+	}
+	fmt.Fprintf(w, "<html><body>")
+	for item := range minions {
+		fmt.Fprintf(w, "Name: %s AttackHealthToCost: %f Cost: %d Link: <a href=\"/card/%s\">LINK</a><br>", minions[item].Name, minions[item].AttackHealthToCost, minions[item].Cost, minions[item].Id)
+	}
+	fmt.Fprintf(w, "</body></html>")
 }
 
 func allCards(w http.ResponseWriter, r *http.Request) {
@@ -45,66 +61,6 @@ func allCards(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Name: %s Cost: %d Link: <a href=\"/card/%s\">LINK</a><br>", cards[card].Name, cards[card].Cost, cards[card].Id)
 	}
 	fmt.Fprintf(w, "</body></html>")
-}
-
-var (
-	BattlecryValue float32 = 4
-	TauntValue float32 = 3
-	DeathrattleValue float32 = 4
-	SpellpowerValue float32 = 4
-	ChargeValue float32 = 4
-	StealthValue float32 = 4
-	WindfuryValue float32 = 4
-	ComboValue float32 = 2
-	DivineShieldValue float32 = 2
-	FreezeValue float32 = 3
-	SecretValue float32 = 2
-	OneTurnEffectVale float32 = 1
-	AuraValue float32 = 2
-)
-
-type MinionValue struct {
-	AttackToCost float32
-	HealthToCost float32
-	AttackHealthToCost float32
-	AttackHealthRatio float32
-	AttackHealthTotal float32
-	MechanicsValue float32
-}
-
-func calculateMinionValue(card hs.Card) *MinionValue {
-	cv := &MinionValue{}
-	//AttackHealthRatio
-	cv.AttackHealthRatio = float32(card.Attack) / float32(card.Health)
-	//AttackHealthTotal
-	cv.AttackHealthTotal = float32(card.Attack) + float32(card.Health)
-	//MechanicsValue
-	var mechValue float32
-	mechValue = 0
-	if len(card.Mechanics) > 0 {
-		for item := range card.Mechanics {
-			switch card.Mechanics[item] {
-				case "Battlecry": mechValue = mechValue + BattlecryValue
-				case "Taunt": mechValue = mechValue + TauntValue
-				case "Deathrattle": mechValue = mechValue + DeathrattleValue
-				case "Spellpower": mechValue = mechValue + SpellpowerValue
-				case "Charge": mechValue = mechValue + ChargeValue
-				case "Stealth": mechValue = mechValue + StealthValue
-				case "Windfury": mechValue = mechValue + WindfuryValue
-				case "Combo": mechValue = mechValue + ComboValue
-				case "Aura": mechValue = mechValue + AuraValue
-				case "Divine Shield": mechValue = mechValue + DivineShieldValue
-			}
-		}
-	}
-	cv.MechanicsValue = mechValue
-	//AttackHealthToCost
-	cv.AttackHealthToCost = cv.AttackHealthTotal / float32(card.Cost)
-	//HealthToCost
-	cv.HealthToCost = float32(card.Health) / float32(card.Cost)
-	//AttackToCost
-	cv.AttackToCost = float32(card.Attack) / float32(card.Cost)
-	return cv
 }
 
 func cardInfo(w http.ResponseWriter, r *http.Request) {
@@ -189,6 +145,14 @@ func updateHandler(w http.ResponseWriter, r *http.Request) {
 			_, err := datastore.Put(c, key, &card)
 			if err != nil {
 				c.Errorf(err.Error())
+			}
+			if card.Type == "Minion" {
+				minionCard := calculateMinionValue(card)
+				key2 := datastore.NewIncompleteKey(c, "Minion", nil)
+				_, err2 := datastore.Put(c, key2, minionCard)
+				if err2 != nil {
+					c.Errorf(err2.Error())
+				}
 			}
 		}
 	}
