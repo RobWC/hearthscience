@@ -11,7 +11,7 @@ type Minion struct {
 	Health             int      `json:"health"`
 	Mechanics          []string `json:"mechanics"`
 	Cost               int      `json:"cost"`
-	Collectible  	   bool     `json:"collectible"`
+	Collectable        bool     `json:"collectible"`
 	AttackToCost       float32
 	HealthToCost       float32
 	AttackHealthToCost float32
@@ -21,7 +21,7 @@ type Minion struct {
 }
 
 func calculateMinionValue(card hs.Card) *Minion {
-	cv := &Minion{Collectible: card.Collectible,Id: card.Id, Name: card.Name, Attack: card.Attack, Health: card.Health, Mechanics: card.Mechanics, Cost: card.Cost}
+	cv := &Minion{Collectable: card.Collectable, Id: card.Id, Name: card.Name, Attack: card.Attack, Health: card.Health, Mechanics: card.Mechanics, Cost: card.Cost}
 	//AttackHealthRatio
 	cv.AttackHealthRatio = float32(card.Attack) / float32(card.Health)
 	//AttackHealthTotal
