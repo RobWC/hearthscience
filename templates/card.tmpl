@@ -1,16 +1,27 @@
 {{define "card"}}
 <h1> {{.Name}} </h1>
-Rarity: {{.Rarity}}<br>
-Cost: {{.Cost }} <br>
+Rarity: <a href="/rarity/{{ .Rarity }}">{{.Rarity }}</a><br>
+Cost: <a href="/cost/{{ .Cost }}">{{.Cost }}</a> <br>
 Flavor: {{.Flavor}} <br>
 Text: {{.Text}} <br>
-Attack/Health: {{.Attack}}/{{.Health}}<br>
+Attack/Health:  <a href="/attack/{{ .Attack }}">{{.Attack }}</a>/<a href="/health/{{ .Health }}">{{.Health }}</a><br>
 Collectible: {{.Collectible}}<br>
 Mechanics:
 <ul>
     {{range .Mechanics}}
-    <li>{{.}}</li>
+    <li><a href="/mechanic/{{ . }}">{{. }}</a></li>
     {{end}}
 </ul>
 Artist: {{ .Artist }}<br>
+
+<div id="drawhere"></div>
+
+<script type="text/javascript">
+    $(function(){
+        var circleData = [50,100,150]
+        var drawArea = d3.select("#drawhere").append("svg").attr("width",400).attr("height",400);
+        var circles = drawArea.selectAll("circle").data(circleData).enter().append("circle");
+        var circleAttributes = circles.attr("cx",function(d){return d;}).attr("cy",function(d){return d;}).attr("r",20).style("fill","blue");
+    });
+</script>
 {{end}}

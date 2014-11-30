@@ -23,6 +23,8 @@ func Main() {
 	mongoSession.SetMode(mgo.Monotonic, true)
 	r := mux.NewRouter()
 	r.HandleFunc("/", mainHandler).Methods("GET")
+	r.HandleFunc("/js/d3.js", jsD3Handler).Methods("GET")
+	r.HandleFunc("/js/jquery.js", jsJQueryHandler).Methods("GET")
 	r.HandleFunc("/update", updateHandler).Methods("GET")
 	r.HandleFunc("/heros", allHeros).Methods("GET")
 	r.HandleFunc("/heropowers", allHeroPowers).Methods("GET")
@@ -32,40 +34,23 @@ func Main() {
 	r.HandleFunc("/minion/{id:[0-9a-zA-Z]+_[0-9a-zA-Z]+}", minionInfo).Methods("GET")
 	r.HandleFunc("/cards", allCards).Methods("GET")
 	r.HandleFunc("/card/{id:[0-9a-zA-Z]+_[0-9a-zA-Z]+}", cardInfo).Methods("GET")
-	r.HandleFunc("/rarity/{rarity:[A-Za-z]+}", cardInfo).Methods("GET")
-	r.HandleFunc("/cost/{cost:[0-9]+}", cardInfo).Methods("GET")
-	r.HandleFunc("/attack/{attack:[0-9]+}", cardInfo).Methods("GET")
-	r.HandleFunc("/health/{health:[0-9]+}", cardInfo).Methods("GET")
-	r.HandleFunc("/mechanic/{mechanic:[0-9]+}", cardInfo).Methods("GET")
-	r.HandleFunc("/race/{race:[A-Za-z]+}", cardInfo).Methods("GET")
+	r.HandleFunc("/rarities", allRarities).Methods("GET")
+	r.HandleFunc("/rarity/{rarity:[A-Za-z]+}", rarityCards).Methods("GET")
+	r.HandleFunc("/cost/{cost:[0-9]+}", costCards).Methods("GET")
+	r.HandleFunc("/attack/{attack:[0-9]+}", attackCards).Methods("GET")
+	r.HandleFunc("/health/{health:[0-9]+}", healthCards).Methods("GET")
+	r.HandleFunc("/mechanics", allMechanics).Methods("GET")
+	r.HandleFunc("/mechanic/{mechanic:[0-9a-zA-Z ]+}", mechanicsCards).Methods("GET")
+	r.HandleFunc("/races", allRaces).Methods("GET")
+	r.HandleFunc("/race/{race:[A-Za-z]+}", raceCards).Methods("GET")
 	//JSON APIs
 	r.HandleFunc("/v1/cards", allCardsJSONv1).Methods("GET").Queries("type", "json")
 	r.HandleFunc("/v1/minions", allMinionsJSONv1).Methods("GET").Queries("type", "json")
+	r.HandleFunc("/v1/races", allRacesJSONv1).Methods("GET").Queries("type", "json")
+	r.HandleFunc("/v1/mechanics", allMechanicsJSONv1).Methods("GET").Queries("type", "json")
 
 	http.Handle("/", r)
 	http.ListenAndServe(":8080", nil)
-}
-
-func cardList(w http.ResponseWriter, r *http.Request) {
-	/*
-		c := appengine.NewContext(r)
-		q := datastore.NewQuery("hs.Card").Filter("Type =", "Minion").Filter("Type =", "Minion").Order("Name")
-		var cards []hs.Card
-		if _, err := q.GetAll(c, &cards); err != nil {
-			c.Errorf(err.Error())
-			return
-		}
-		q2 := datastore.NewQuery("hs.Card").Order("Name").Filter("Type =", "Spell")
-		if _, err := q2.GetAll(c, &cards); err != nil {
-			c.Errorf(err.Error())
-			return
-		}
-		fmt.Fprintf(w, "<html><body>")
-		for card := range cards {
-			fmt.Fprintf(w, "Name: %s Cost: %d<br>", cards[card].Name, cards[card].Cost)
-		}
-		fmt.Fprintf(w, "</body></html>")
-	*/
 }
 
 func mainHandler(w http.ResponseWriter, r *http.Request) {
@@ -74,5 +59,8 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "<a href=\"/spells\">Spells</a><br>")
 	fmt.Fprintf(w, "<a href=\"/weapons\">Weapons</a><br>")
 	fmt.Fprintf(w, "<a href=\"/heros\">Heros</a><br>")
+	fmt.Fprintf(w, "<a href=\"/races\">Races</a><br>")
+	fmt.Fprintf(w, "<a href=\"/rarities\">Rarities</a><br>")
+	fmt.Fprintf(w, "<a href=\"/mechanics\">Mechanics</a><br>")
 	fmt.Fprintf(w, "<a href=\"/heropowers\">Hero Powers</a><br>")
 }
