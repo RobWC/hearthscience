@@ -16,10 +16,11 @@ Artist: {{ .Artist }}<br>
 
 <div id="drawhere"></div>
 
-<script type="text/javascript">
+<script type="text/javascript">d3
     $(function(){
         var circleData = [50,100,150]
-        var drawArea = d3.select("#drawhere").append("svg").attr("width",400).attr("height",400);
+        var values = [{{.Cost}},{{.Attack}},{{.Health}}]
+        var drawArea = d3.select("#drawhere").append("svg").attr("width",200).attr("height",200);
         var circles = drawArea.selectAll("circle").data(circleData).enter().append("circle");
         var circleAttributes = circles.attr("cx",function(d){return d;}).attr("cy",function(d){return d;}).attr("r",20).style("fill","blue");
     });
